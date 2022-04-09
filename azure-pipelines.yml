@@ -6,18 +6,8 @@
 trigger:
   branches:
     include:
-    - release/*
-    - develop
-    - master
-  tags:
-    include:
-    - v1.*
-    - v2.*
-    - v3.*
-    - v4.*
-    - v5.*
+    - '*-servarr'
 
-pr: none
 
 pool:
   vmImage: 'windows-latest'
@@ -26,6 +16,9 @@ variables:
   solution: '**/FluentMigrator.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  MajorVersion: '3.2.2'
+  MinorVersion: $[counter('minorVersion', 1)]
+  FluentVersion: '$(majorVersion).$(minorVersion)'
 
 steps:
 - task: NuGetToolInstaller@1
@@ -48,7 +41,7 @@ steps:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-    msbuildArgs: '/p:Version="$(build.buildNumber)"'
+    msbuildArgs: '/p:Version="$(FluentVersion)"'
 
 - task: VSTest@2
   inputs:
@@ -58,32 +51,14 @@ steps:
 
 - task: CmdLine@2
   inputs:
-    script: 'dotnet pack $(Build.SourcesDirectory)\FluentMigrator.sln --output $(Build.ArtifactStagingDirectory) --include-symbols -p:Configuration=$(buildConfiguration) -p:Version=$(build.buildNumber) --verbosity Detailed'
+    script: 'dotnet pack $(Build.SourcesDirectory)\FluentMigrator.sln --output $(Build.ArtifactStagingDirectory) --include-symbols -p:Configuration=$(buildConfiguration) -p:Version=$(FluentVersion) --verbosity Detailed'
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'publish'
     publishWebProjects: false
     projects: 'src/FluentMigrator.Console/FluentMigrator.Console.csproj'
-    arguments: '-c $(buildConfiguration) -r win7-x86 -o "$(Build.ArtifactStagingDirectory)/publish/tools/net461/x86" -p:Platform=x86 -p:TargetFramework=net461 -p:Version=$(build.buildNumber)'
-    zipAfterPublish: false
-    modifyOutputPath: false
-
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'publish'
-    publishWebProjects: false
-    projects: 'src/FluentMigrator.Console/FluentMigrator.Console.csproj'
-    arguments: '-c $(buildConfiguration) -r win7-x64 -o "$(Build.ArtifactStagingDirectory)/publish/tools/net461/x64" -p:Platform=x64 -p:TargetFramework=net461 -p:Version=$(build.buildNumber)'
-    zipAfterPublish: false
-    modifyOutputPath: false
-
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'publish'
-    publishWebProjects: false
-    projects: 'src/FluentMigrator.Console/FluentMigrator.Console.csproj'
-    arguments: '-c $(buildConfiguration) -r any -o "$(Build.ArtifactStagingDirectory)/publish/tools/net461/any" -p:Platform=AnyCpu -p:TargetFramework=net461 -p:Version=$(build.buildNumber)'
+    arguments: '-c $(buildConfiguration) -r any -o "$(Build.ArtifactStagingDirectory)/publish/tools/net461/any" -p:Platform=AnyCpu -p:TargetFramework=net461 -p:Version=$(FluentVersion)'
     zipAfterPublish: false
     modifyOutputPath: false
 
@@ -93,10 +68,10 @@ steps:
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/publish'
 
-- script: nuget.exe pack $(Build.ArtifactStagingDirectory)/publish/FluentMigrator.Console.nuspec -NonInteractive -OutputDirectory $(Build.ArtifactStagingDirectory) -version $(build.buildNumber)
+- script: nuget.exe pack $(Build.ArtifactStagingDirectory)/publish/FluentMigrator.Console.nuspec -NonInteractive -OutputDirectory $(Build.ArtifactStagingDirectory) -version $(FluentVersion)
   displayName: NuGet pack FluentMigrator.Console
   
-- script: nuget.exe pack $(Build.ArtifactStagingDirectory)/publish/FluentMigrator.Tools.nuspec -NonInteractive -OutputDirectory $(Build.ArtifactStagingDirectory) -version $(build.buildNumber)
+- script: nuget.exe pack $(Build.ArtifactStagingDirectory)/publish/FluentMigrator.Tools.nuspec -NonInteractive -OutputDirectory $(Build.ArtifactStagingDirectory) -version $(FluentVersion)
   displayName: NuGet pack FluentMigrator.Tools
 
 - task: PublishBuildArtifacts@1
@@ -104,3 +79,10 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
     publishLocation: 'Container'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/publish/tools/net461/any'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: '323efe4e-c7d8-4bcd-acfe-5afb38d520bf'
