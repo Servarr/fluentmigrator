@@ -57,6 +57,8 @@ namespace FluentMigrator.Runner.Generators.SQLite
             SetTypeMap(DbType.Date, "DATETIME");
             SetTypeMap(DbType.DateTime, "DATETIME");
             SetTypeMap(DbType.DateTime2, "DATETIME");
+            // Custom so that we can use DateTimeOffset in Postgres for appropriate DB typing
+            SetTypeMap(DbType.DateTimeOffset, "DATETIME");
             SetTypeMap(DbType.Time, "DATETIME");
             SetTypeMap(DbType.Boolean, "INTEGER");
             SetTypeMap(DbType.Guid, "UNIQUEIDENTIFIER");
