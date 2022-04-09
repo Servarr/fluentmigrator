@@ -78,6 +78,6 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/publish/tools/net461/any'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/publish/tools/net461/any/*.npkg'
     nuGetFeedType: 'internal'
     publishVstsFeed: '323efe4e-c7d8-4bcd-acfe-5afb38d520bf'
