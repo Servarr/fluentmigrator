@@ -27,19 +27,6 @@ steps:
   inputs:
     version: '8.x'
 
-- task: gitversion/setup@0
-  displayName: 'Install GitVersion (using GitTools 0.10.2.23031113 or later)'
-  inputs:
-    versionSpec: '5.12'
-    includePrerelease: true
-
-- task: gitversion/execute@0
-  displayName: 'Execute GitVersion (using GitTools 0.10.2.23031113 or later)'
-  inputs:
-    updateAssemblyInfo: false
-  env:
-      BUILD_BUILDNUMBER: $(GitVersion.NuGetVersionV2)
-
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
