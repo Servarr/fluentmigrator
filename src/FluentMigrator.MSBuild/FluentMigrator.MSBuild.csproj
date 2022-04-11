@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net48;netstandard2.0</TargetFrameworks>
     <Description>MSBuild runner for FluentMigrator</Description>
+    <PackageId>Servarr.$(AssemblyName)</PackageId>
   </PropertyGroup>
   <Import Project="$(MSBuildThisFileDirectory)../../PackageTool.props" />
   <ItemGroup>
