@@ -10,6 +10,7 @@
     <IsPackable>false</IsPackable>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <RuntimeIdentifiers>win7-x86;win7-x64;any</RuntimeIdentifiers>
+    <PackageId>Servarr.$(AssemblyName)</PackageId>
   </PropertyGroup>
   <Import Project="$(MSBuildThisFileDirectory)../../PackageTool.props" />
   <ItemGroup>

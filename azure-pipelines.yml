@@ -42,7 +42,7 @@ steps:
 
 - task: CmdLine@2
   inputs:
-    script: 'dotnet pack $(Build.SourcesDirectory)\FluentMigrator.sln --output $(Build.ArtifactStagingDirectory) --include-symbols -p:Configuration=$(buildConfiguration) -p:Version=$(FluentVersion) --verbosity Detailed'
+    script: 'dotnet pack $(Build.SourcesDirectory)\FluentMigrator.sln --output $(Build.ArtifactStagingDirectory) -p:Configuration=$(buildConfiguration) -p:Version=$(FluentVersion) --verbosity Detailed'
 
 - task: DotNetCoreCLI@2
   inputs:
@@ -68,6 +68,6 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/FluentMigrator.$(FluentVersion).nupkg'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
     nuGetFeedType: 'internal'
     publishVstsFeed: '7ab38f4e-5a57-4d70-84f4-94dd9bc5d6df/323efe4e-c7d8-4bcd-acfe-5afb38d520bf'
