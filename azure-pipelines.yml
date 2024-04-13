@@ -16,7 +16,7 @@ variables:
   solution: '**/FluentMigrator.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  MajorVersion: '3.3.2'
+  MajorVersion: '5.2.0'
   MinorVersion: $[counter('minorVersion', 1)]
   FluentVersion: '$(majorVersion).$(minorVersion)'
 
